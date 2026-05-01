@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>古诗《清明》赏析 — 杜牧</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Serif SC', serif;
+    background: #f5efe0;
+    color: #3a3226;
+    line-height: 1.8;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    position: relative;
+    height: 100vh;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: linear-gradient(180deg, #b8d4b8 0%, #d4c9a8 40%, #c8bfa0 100%);
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 70%, rgba(255,255,255,0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 20%, rgba(200,210,180,0.4) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 60%, rgba(180,190,160,0.3) 0%, transparent 60%);
+    z-index: 1;
+  }
+
+  /* ── Rain canvas ── */
+  #rainCanvas {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    padding: 20px;
+  }
+  .poem-title {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 7rem;
+    color: #3a3226;
+    text-shadow: 4px 4px 12px rgba(0,0,0,0.15);
+    letter-spacing: 0.15em;
+  }
+  .poem-author {
+    font-size: 1.8rem;
+    color: #5c5242;
+    margin-top: 0.2em;
+    letter-spacing: 0.3em;
+  }
+  .poem-dynasty {
+    font-size: 1.2rem;
+    color: #7a7060;
+    letter-spacing: 0.2em;
+  }
+  .scroll-hint {
+    position: absolute;
+    bottom: 30px;
+    z-index: 3;
+    color: #6b5f4f;
+    font-size: 0.95rem;
+    animation: bounce 2s infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+  }
+
+  /* ── Sections ── */
+  .section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 30px;
+  }
+  .section h2 {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 2.8rem;
+    text-align: center;
+    color: #5a4c3a;
+    margin-bottom: 30px;
+    position: relative;
+  }
+  .section h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: #8b7355;
+    margin: 10px auto 0;
+    border-radius: 2px;
+  }
+
+  /* ── Poet Card ── */
+  .poet-card {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    background: linear-gradient(135deg, #fff9ed, #fdf3e0);
+    border-radius: 16px;
+    padding: 36px;
+    box-shadow: 0 6px 30px rgba(0,0,0,0.08);
+    border: 1px solid #e0d5c0;
+  }
+  .poet-avatar {
+    flex-shrink: 0;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: #d4c9a8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 4rem;
+    color: #5a4c3a;
+    border: 3px solid #c0b090;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><circle cx="80" cy="55" r="28" fill="%235a4c3a" opacity="0.15"/><ellipse cx="80" cy="120" rx="42" ry="28" fill="%235a4c3a" opacity="0.12"/></svg>');
+    background-size: cover;
+  }
+  .poet-info { flex: 1; }
+  .poet-info h3 {
+    font-size: 1.6rem;
+    color: #5a3e2b;
+    margin-bottom: 6px;
+  }
+  .poet-info .lifespan {
+    color: #8b7355;
+    font-size: 1rem;
+    margin-bottom: 14px;
+  }
+  .poet-info p {
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: #4a4033;
+    text-indent: 2em;
+  }
+
+  /* ── Poem Display ── */
+  .poem-display {
+    background: linear-gradient(135deg, #faf6ed, #f2ebd8);
+    border-radius: 16px;
+    padding: 48px 36px;
+    text-align: center;
+    box-shadow: 0 6px 30px rgba(0,0,0,0.08);
+    border: 1px solid #e0d5c0;
+    position: relative;
+    overflow: hidden;
+  }
+  .poem-display::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle, rgba(180,200,160,0.3) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .poem-line {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 2.6rem;
+    color: #3a3226;
+    letter-spacing: 0.1em;
+    line-height: 2.2;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Line Analysis ── */
+  .analysis-grid {
+    display: grid;
+    gap: 24px;
+  }
+  .analysis-card {
+    background: #fffdf7;
+    border-radius: 14px;
+    padding: 28px 32px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    border-left: 4px solid #8b7355;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .analysis-card:hover {
+    transform: translateX(6px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+  }
+  .analysis-card .line-num {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #8b7355;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 1.5rem;
+  }
+  .analysis-card .line-text {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 1.8rem;
+    color: #3a3226;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .analysis-card .line-explain {
+    font-size: 1rem;
+    color: #5c5242;
+    line-height: 1.8;
+  }
+
+  /* ── Imagery Section ── */
+  .imagery-gallery {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .imagery-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    transition: transform 0.3s;
+  }
+  .imagery-card:hover { transform: translateY(-4px); }
+  .imagery-card .img-placeholder {
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    position: relative;
+  }
+  .imagery-card .img-label {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    color: #5a4c3a;
+    text-align: center;
+    background: #fdf9f2;
+  }
+
+  /* 各意象配色 */
+  .img-rain     { background: linear-gradient(135deg, #8fa4b8, #b0c8d8); }
+  .img-willow   { background: linear-gradient(135deg, #a8c8a0, #c8d8b8); }
+  .img-road     { background: linear-gradient(135deg, #c8b898, #d8ccb0); }
+  .img-shepherd { background: linear-gradient(135deg, #d8c8a8, #e8dcc0); }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: #8b8068;
+    font-size: 0.9rem;
+    border-top: 1px solid #e0d5c0;
+    margin-top: 40px;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .poem-title { font-size: 3.5rem; }
+    .poet-card { flex-direction: column; align-items: center; text-align: center; }
+    .poem-line { font-size: 1.6rem; }
+    .imagery-gallery { grid-template-columns: repeat(2, 1fr); }
+    .analysis-card { flex-direction: column; align-items: center; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════ Hero ════════════ -->
+<section class="hero">
+  <canvas id="rainCanvas"></canvas>
+  <div class="hero-content">
+    <h1 class="poem-title">清明</h1>
+    <p class="poem-author">杜牧</p>
+    <p class="poem-dynasty">唐</p>
+  </div>
+  <p class="scroll-hint">▼ 向下滚动赏析 ▼</p>
+</section>
+
+<!-- ════════════ 诗人背景 ════════════ -->
+<section class="section" id="poet">
+  <h2>诗人背景</h2>
+  <div class="poet-card">
+    <div class="poet-avatar">杜</div>
+    <div class="poet-info">
+      <h3>杜牧</h3>
+      <p class="lifespan">803年 — 约852年 · 字牧之 · 号樊川居士</p>
+      <p>杜牧，字牧之，京兆万年（今陕西西安）人，晚唐著名诗人、散文家。他是宰相杜佑之孙，家学渊源深厚，自幼聪颖好学。二十六岁进士及第，历任监察御史、黄州刺史、池州刺史、睦州刺史等职，官至中书舍人。</p>
+      <p>杜牧的诗、赋、古文俱佳，与李商隐齐名，世称"小李杜"（区别于李白、杜甫的"大李杜"）。他的诗风清丽俊爽，意境深远，尤以七言绝句最为人称道。其诗题材广泛，既有咏史怀古的深沉之作，也有山水田园的清丽篇什，更有感慨时事的悲凉之作。《清明》一诗是其写景抒情诗中的绝唱，以短短二十八字，勾勒出一幅江南清明时节的烟雨行旅图。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ 原诗 ════════════ -->
+<section class="section" id="poem-text">
+  <h2>原诗</h2>
+  <div class="poem-display">
+    <p class="poem-line">清明时节雨纷纷，</p>
+    <p class="poem-line">路上行人欲断魂。</p>
+    <p class="poem-line">借问酒家何处有？</p>
+    <p class="poem-line">牧童遥指杏花村。</p>
+  </div>
+</section>
+
+<!-- ════════════ 逐句赏析 ════════════ -->
+<section class="section" id="analysis">
+  <h2>逐句赏析</h2>
+  <div class="analysis-grid">
+
+    <div class="analysis-card">
+      <div class="line-num">一</div>
+      <div>
+        <span class="line-text">清明时节雨纷纷</span>
+        <p class="line-explain">首句点明时间——"清明时节"，这是中国传统的祭祖扫墓之日，也是春意最浓之时。"雨纷纷"三字以叠词起笔，渲染出春雨绵密、细碎不断的氛围。这雨既是自然之景，更烘托出诗人心中那份纷乱的愁绪，以景起情，情景交融，一开篇便将读者带入了一个烟雨迷蒙的江南春日。</p>
+      </div>
+    </div>
+
+    <div class="analysis-card">
+      <div class="line-num">二</div>
+      <div>
+        <span class="line-text">路上行人欲断魂</span>
+        <p class="line-explain">第二句聚焦"路上行人"——旅途中赶路的游子。"欲断魂"三字极写愁苦之深，魂魄将断，足见内心悲切至极。清明本应与家人团聚扫墓祭祖，而诗人却独自漂泊于途中，风雨交加、衣衫尽湿，触景生悲，思乡之情、羁旅之愁、身世之叹一齐涌上心头。</p>
+      </div>
+    </div>
+
+    <div class="analysis-card">
+      <div class="line-num">三</div>
+      <div>
+        <span class="line-text">借问酒家何处有</span>
+        <p class="line-explain">第三句笔锋一转，由愁苦转向行动——"借问酒家何处有"。诗人想要借酒浇愁、避雨歇脚。这一问打破了前两句的沉闷，为全诗注入了一丝生机。一个"借"字，道出诗人客居身份；一个"问"字，引出下一句的绝妙回应。此句是承上启下的关键，将沉重的愁绪引向了一个明朗的出口。</p>
+      </div>
+    </div>
+
+    <div class="analysis-card">
+      <div class="line-num">四</div>
+      <div>
+        <span class="line-text">牧童遥指杏花村</span>
+        <p class="line-explain">末句是全诗的点睛之笔。"牧童"的出现带来一抹天真与生机，与前文的"断魂"形成强烈对比。"遥指"二字极为传神——牧童没有言语，只用手遥遥一指，给人以无限遐想空间。"杏花村"三字以景收尾，杏花正盛开的村庄，隐含着一个温暖的去处，酒香与花香交织，愁绪在远方找到了安放之处。全诗至此，余韵悠长，令人回味不尽。</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════ 诗歌意象 ════════════ -->
+<section class="section" id="imagery">
+  <h2>诗歌意象</h2>
+  <div class="imagery-gallery">
+
+    <div class="imagery-card">
+      <div class="img-placeholder img-rain" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 140%22><g fill=%22%234a6a8a%22 opacity=%220.6%22><line x1=%2230%22 y1=%2210%22 x2=%2230%22 y2=%2240%22 stroke=%22%235a7a9a%22 stroke-width=%221.5%22 stroke-linecap=%22round%22/><line x1=%2260%22 y1=%225%22 x2=%2260%22 y2=%2235%22 stroke=%22%235a7a9a%22 stroke-width=%221.5%22 stroke-linecap=%22round%22/><line x1=%2290%22 y1=%2215%22 x2=%2290%22 y2=%2245%22 stroke=%22%235a7a9a%22 stroke-width=%221.5%22 stroke-linecap=%22round%22/><line x1=%22120%22 y1=%228%22 x2=%22120%22 y2=%2238%22 stroke=%22%235a7a9a%22 stroke-width=%221.5%22 stroke-linecap=%22round%22/><line x1=%22150%22 y1=%2220%22 x2=%22150%22 y2=%2250%22 stroke=%22%235a7a9a%22 stroke-width=%221.5%22 stroke-linecap=%22round%22/><line x1=%22180%22 y1=%2212%22 x2=%22180%22 y2=%2242%22 stroke=%22%235a7a9a%22 stroke-width=%221.5%22 stroke-linecap=%22round%22/></g><text x=%22100%22 y=%22110%22 text-anchor=%22middle%22 font-size=%2236%22>🌧️</text></svg>')"></div>
+      <div class="img-label">纷纷春雨</div>
+    </div>
+
+    <div class="imagery-card">
+      <div class="img-placeholder img-willow" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 140%22><g stroke=%22%235a7a3a%22 stroke-width=%222%22 fill=%22none%22 opacity=%220.7%22><path d=%22M100,120 Q100,100 100,60%22/><path d=%22M100,70 Q70,40 50,55%22/><path d=%22M100,70 Q130,40 150,55%22/><path d=%22M100,85 Q60,65 40,75%22/><path d=%22M100,85 Q140,65 160,75%22/><path d=%22M100,60 Q80,30 65,45%22/><path d=%22M100,60 Q120,30 135,45%22/></g><text x=%22100%22 y=%22115%22 text-anchor=%22middle%22 font-size=%2232%22>🌿</text></svg>')"></div>
+      <div class="img-label">杨柳依依</div>
+    </div>
+
+    <div class="imagery-card">
+      <div class="img-placeholder img-road" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 140%22><path d=%22M0,120 Q60,115 100,90 Q140,65 200,60%22 stroke=%22%23908060%22 stroke-width=%223%22 fill=%22none%22 stroke-dasharray=%228,4%22 opacity=%220.7%22/><circle cx=%22130%22 cy=%2275%22 r=%224%22 fill=%22%23908060%22 opacity=%220.5%22/><text x=%22100%22 y=%22110%22 text-anchor=%22middle%22 font-size=%2232%22>🛤️</text></svg>')"></div>
+      <div class="img-label">行人旅途</div>
+    </div>
+
+    <div class="imagery-card">
+      <div class="img-placeholder img-shepherd" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 140%22><circle cx=%22150%22 cy=%2240%22 r=%2220%22 fill=%22%23c8a080%22 opacity=%220.4%22/><circle cx=%22150%22 cy=%2235%22 r=%225%22 fill=%22%23a08060%22 opacity=%220.5%22/><rect x=%22148%22 y=%2260%22 width=%224%22 height=%2215%22 fill=%22%23a08060%22 opacity=%220.5%22/><line x1=%22152%22 y1=%2262%22 x2=%22175%22 y2=%2270%22 stroke=%22%23907050%22 stroke-width=%222%22 opacity=%220.5%22/><text x=%22100%22 y=%22110%22 text-anchor=%22middle%22 font-size=%2232%22>🐂</text></svg>')"></div>
+      <div class="img-label">牧童遥指</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════ 艺术特色 ════════════ -->
+<section class="section" id="features">
+  <h2>艺术特色</h2>
+  <div style="background:#fffdf7;border-radius:14px;padding:32px 36px;box-shadow:0 4px 20px rgba(0,0,0,0.05);border:1px solid #e0d5c0;">
+    <p style="text-indent:2em;margin-bottom:14px;">此诗仅用二十八字，却包含了<strong>时间（清明）、天气（雨）、人物（行人、牧童）、情节（问路、指路）、地点（路上、杏花村）</strong>等丰富元素，容量之大令人惊叹。</p>
+    <p style="text-indent:2em;margin-bottom:14px;"><strong>情景交融：</strong>全诗以"雨纷纷"奠定愁绪基调，雨的迷蒙与心的怅惘交相辉映。景语即情语，自然天成。</p>
+    <p style="text-indent:2em;margin-bottom:14px;"><strong>用词精妙：</strong>"纷纷"、"断魂"、"借问"、"遥指"，每个词语都极具画面感与情感张力，不能易一字。叠字"纷纷"尤为精妙，既写雨态，又状心绪。</p>
+    <p style="text-indent:2em;margin-bottom:14px;"><strong>节奏变化：</strong>前两句低沉压抑，第三句以问句打破沉闷，第四句以远景收束，由沉重到轻快，由封闭到开阔，情感起伏跌宕，结构浑然一体。</p>
+    <p style="text-indent:2em;"><strong>留白艺术：</strong>"牧童遥指"点到为止，杏花村是远是近？诗人是否前往？一切尽在不言中，留给读者无限想象，这是中国古典诗歌留白艺术的典范。</p>
+  </div>
+</section>
+
+<footer>
+  古诗《清明》赏析 · 杜牧（唐）· 纯文学赏析页面
+</footer>
+
+<!-- ════════════ 雨丝动画 ════════════ -->
+<script>
+(function() {
+  const canvas = document.getElementById('rainCanvas');
+  const ctx = canvas.getContext('2d');
+  let width, height, raindrops = [];
+
+  function resize() {
+    width = canvas.width = canvas.offsetWidth;
+    height = canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // 创建雨滴
+  for (let i = 0; i < 100; i++) {
+    raindrops.push({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      len: 10 + Math.random() * 20,
+      speed: 6 + Math.random() * 10,
+      opacity: 0.15 + Math.random() * 0.25
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+    for (let drop of raindrops) {
+      ctx.beginPath();
+      ctx.moveTo(drop.x, drop.y);
+      ctx.lineTo(drop.x - 1, drop.y + drop.len);
+      ctx.strokeStyle = `rgba(120,140,160,${drop.opacity})`;
+      ctx.lineWidth = 1.2;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      drop.y += drop.speed;
+      if (drop.y > height + drop.len) {
+        drop.y = -drop.len;
+        drop.x = Math.random() * width;
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+
+</body>
+</html>
